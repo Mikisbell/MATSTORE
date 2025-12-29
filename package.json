@@ -1,0 +1,56 @@
+{
+  "name": "matstore",
+  "version": "0.1.0",
+  "description": "Sistema Operativo de Retail Híbrido, Offline-First para LATAM",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "tauri": "tauri",
+    "desktop": "tauri dev",
+    "desktop:build": "tauri build",
+    "docs:audit": "node scripts/docs-audit.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.89.0",
+    "@tauri-apps/api": "^2.9.1",
+    "@tauri-apps/plugin-shell": "^2.3.3",
+    "dexie": "^4.2.1",
+    "next": "16.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-hotkeys-hook": "^5.2.1",
+    "rxdb": "^16.21.1",
+    "rxjs": "^7.8.2",
+    "uuid": "^13.0.0",
+    "zustand": "^4.5.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@tauri-apps/cli": "^2.9.6",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.7.4",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "keywords": [
+    "retail",
+    "pos",
+    "offline-first",
+    "saas",
+    "peru"
+  ],
+  "author": "Mikis",
+  "license": "UNLICENSED"
+}
