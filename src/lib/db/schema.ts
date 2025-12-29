@@ -17,7 +17,7 @@ export interface ProductDoc {
   global_ref_id?: string;
   updated_at: string;
   created_at?: string;
-  deleted?: boolean;
+  is_deleted?: boolean;
 }
 
 export interface VariantDoc {
@@ -35,7 +35,7 @@ export interface VariantDoc {
   is_taxed?: boolean;
   updated_at: string;
   created_at?: string;
-  deleted?: boolean;
+  is_deleted?: boolean;
 }
 
 export interface SaleDoc {
@@ -52,7 +52,7 @@ export interface SaleDoc {
   synced_at?: string;
   updated_at: string;
   created_at?: string;
-  deleted?: boolean;
+  is_deleted?: boolean;
 }
 
 export interface SaleItemDoc {
@@ -65,7 +65,7 @@ export interface SaleItemDoc {
   discount?: number;
   updated_at?: string;
   created_at?: string;
-  deleted?: boolean;
+  is_deleted?: boolean;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -104,7 +104,7 @@ export const productSchema: RxJsonSchema<ProductDoc> = {
     created_at: {
       type: 'string', // ISO Date
     },
-    deleted: {
+    is_deleted: {
       type: 'boolean',
     },
   },
@@ -163,7 +163,7 @@ export const variantSchema: RxJsonSchema<VariantDoc> = {
     created_at: {
       type: 'string',
     },
-    deleted: {
+    is_deleted: {
       type: 'boolean',
     },
   },
@@ -219,7 +219,7 @@ export const saleSchema: RxJsonSchema<SaleDoc> = {
     created_at: {
       type: 'string',
     },
-    deleted: {
+    is_deleted: {
       type: 'boolean',
     },
   },
@@ -262,7 +262,7 @@ export const saleItemSchema: RxJsonSchema<SaleItemDoc> = {
     created_at: {
       type: 'string',
     },
-    deleted: {
+    is_deleted: {
       type: 'boolean',
     },
   },
@@ -277,7 +277,7 @@ export interface TenantDoc {
   plan_type?: string;
   updated_at: string;
   created_at?: string;
-  deleted?: boolean;
+  is_deleted?: boolean;
 }
 export const tenantSchema: RxJsonSchema<TenantDoc> = {
   version: 0,
@@ -289,7 +289,7 @@ export const tenantSchema: RxJsonSchema<TenantDoc> = {
     plan_type: { type: 'string' },
     updated_at: { type: 'string' },
     created_at: { type: 'string' },
-    deleted: { type: 'boolean' },
+    is_deleted: { type: 'boolean' },
   },
   required: ['id', 'name', 'updated_at'],
 };
@@ -305,7 +305,7 @@ export interface StoreDoc {
   is_warehouse?: boolean;
   updated_at: string;
   created_at?: string;
-  deleted?: boolean;
+  is_deleted?: boolean;
 }
 export const storeSchema: RxJsonSchema<StoreDoc> = {
   version: 0,
@@ -319,7 +319,7 @@ export const storeSchema: RxJsonSchema<StoreDoc> = {
     is_warehouse: { type: 'boolean' },
     updated_at: { type: 'string' },
     created_at: { type: 'string' },
-    deleted: { type: 'boolean' },
+    is_deleted: { type: 'boolean' },
   },
   required: ['id', 'name', 'updated_at'],
 };
@@ -335,7 +335,7 @@ export interface UserDoc {
   role?: 'owner' | 'manager' | 'cashier';
   updated_at: string;
   created_at?: string;
-  deleted?: boolean;
+  is_deleted?: boolean;
 }
 export const userSchema: RxJsonSchema<UserDoc> = {
   version: 0,
@@ -349,7 +349,7 @@ export const userSchema: RxJsonSchema<UserDoc> = {
     role: { type: 'string' },
     updated_at: { type: 'string' },
     created_at: { type: 'string' },
-    deleted: { type: 'boolean' },
+    is_deleted: { type: 'boolean' },
   },
   required: ['id', 'updated_at'],
 };
@@ -367,7 +367,7 @@ export interface ClientDoc {
   credit_limit?: number;
   updated_at: string;
   created_at?: string;
-  deleted?: boolean;
+  is_deleted?: boolean;
 }
 export const clientSchema: RxJsonSchema<ClientDoc> = {
   version: 0,
@@ -383,7 +383,7 @@ export const clientSchema: RxJsonSchema<ClientDoc> = {
     credit_limit: { type: 'number' },
     updated_at: { type: 'string' },
     created_at: { type: 'string' },
-    deleted: { type: 'boolean' },
+    is_deleted: { type: 'boolean' },
   },
   required: ['id', 'name', 'updated_at'],
 };
@@ -401,7 +401,7 @@ export interface GlobalCatalogDoc {
   brand?: string;
   updated_at: string;
   created_at?: string;
-  deleted?: boolean;
+  is_deleted?: boolean;
 }
 export const globalCatalogSchema: RxJsonSchema<GlobalCatalogDoc> = {
   version: 0,
@@ -417,7 +417,7 @@ export const globalCatalogSchema: RxJsonSchema<GlobalCatalogDoc> = {
     brand: { type: 'string' },
     updated_at: { type: 'string' },
     created_at: { type: 'string' },
-    deleted: { type: 'boolean' },
+    is_deleted: { type: 'boolean' },
   },
   required: ['id', 'name', 'updated_at'],
 };
@@ -432,7 +432,7 @@ export interface CategoryDoc {
   color?: string;
   updated_at: string;
   created_at?: string;
-  deleted?: boolean;
+  is_deleted?: boolean;
 }
 export const categorySchema: RxJsonSchema<CategoryDoc> = {
   version: 0,
@@ -445,7 +445,7 @@ export const categorySchema: RxJsonSchema<CategoryDoc> = {
     color: { type: 'string' },
     updated_at: { type: 'string' },
     created_at: { type: 'string' },
-    deleted: { type: 'boolean' },
+    is_deleted: { type: 'boolean' },
   },
   required: ['id', 'name', 'updated_at'],
 };
@@ -463,7 +463,7 @@ export interface InventoryBatchDoc {
   quantity?: number;
   updated_at: string;
   created_at?: string;
-  deleted?: boolean;
+  is_deleted?: boolean;
 }
 export const inventoryBatchSchema: RxJsonSchema<InventoryBatchDoc> = {
   version: 0,
@@ -479,7 +479,7 @@ export const inventoryBatchSchema: RxJsonSchema<InventoryBatchDoc> = {
     quantity: { type: 'number' },
     updated_at: { type: 'string' },
     created_at: { type: 'string' },
-    deleted: { type: 'boolean' },
+    is_deleted: { type: 'boolean' },
   },
   required: ['id', 'updated_at'],
 };
@@ -498,7 +498,7 @@ export interface CreditLedgerDoc {
   notes?: string;
   updated_at: string;
   created_at?: string;
-  deleted?: boolean;
+  is_deleted?: boolean;
 }
 export const creditLedgerSchema: RxJsonSchema<CreditLedgerDoc> = {
   version: 0,
@@ -515,7 +515,7 @@ export const creditLedgerSchema: RxJsonSchema<CreditLedgerDoc> = {
     notes: { type: 'string' },
     updated_at: { type: 'string' },
     created_at: { type: 'string' },
-    deleted: { type: 'boolean' },
+    is_deleted: { type: 'boolean' },
   },
   required: ['id', 'amount', 'updated_at'],
 };

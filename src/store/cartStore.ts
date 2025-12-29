@@ -112,7 +112,7 @@ const createCartSlice: StateCreator<CartState> = (set, get) => ({
         tax: summary.tax,
         updated_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
-        deleted: false,
+        is_deleted: false,
       };
 
       // 3. Create Sale Item Documents
@@ -126,7 +126,7 @@ const createCartSlice: StateCreator<CartState> = (set, get) => ({
         discount: 0,
         updated_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
-        deleted: false,
+        is_deleted: false,
       }));
 
       // 4. Persistence Transaction
@@ -198,7 +198,7 @@ const createCartSlice: StateCreator<CartState> = (set, get) => ({
         tax: summary.tax,
         updated_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
-        deleted: false,
+        is_deleted: false,
       };
 
       // 2. Create Sale Items
@@ -212,7 +212,7 @@ const createCartSlice: StateCreator<CartState> = (set, get) => ({
         discount: 0,
         updated_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
-        deleted: false,
+        is_deleted: false,
       }));
 
       // 3. Create Credit Ledger Entry (Charge)
@@ -226,7 +226,7 @@ const createCartSlice: StateCreator<CartState> = (set, get) => ({
         notes: `Venta a crédito - ${items.length} items`,
         updated_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
-        deleted: false,
+        is_deleted: false,
       };
 
       // 4. Persist to RxDB
