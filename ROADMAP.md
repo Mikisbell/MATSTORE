@@ -82,6 +82,7 @@ FASE 3: FUNCIONALIDAD HÍBRIDA (Diferenciadores)
 FASE 4: INTEGRACIÓN Y DESPLIEGUE
 ═══════════════════════════════════════════════════════════════════════════════
 
-[ ] 4.1. CI/CD Pipeline: GitHub Actions para build de Tauri.
+[x] 4.1. CI/CD Pipeline: GitHub Actions para build de Tauri.
+    ✅ COMPLETADO: 2025-12-29 - Workflow con lint, build matrix (Linux/Windows/macOS), y release artifacts.
 
 [ ] 4.2. Auditoría Final: Revisión de fugas de memoria y rendimiento.
