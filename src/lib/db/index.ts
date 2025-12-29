@@ -38,21 +38,19 @@ export type MatStoreDatabase = RxDatabase<MatStoreCollections>;
 import { replicateSupabase } from './replication';
 
 /**
- * Singleton de la Base de Datos
+ * Singleton de la Base de Datos usando globalThis
  * Evita recrear la DB en hot-reload (Next.js dev mode).
  */
-let dbPromise: Promise<MatStoreDatabase> | null = null;
+declare global {
+  var _matStoreDbPromise: Promise<MatStoreDatabase> | undefined;
+}
 
 const createDB = async (): Promise<MatStoreDatabase> => {
-  if (process.env.NODE_ENV === 'development') {
-    // import('rxdb/plugins/dev-mode').then((module) => addRxPlugin(module.RxDBDevModePlugin));
-  }
-
   const db = await createRxDatabase<MatStoreCollections>({
     name: 'matstore_local_db',
     storage: getRxStorageDexie(),
     multiInstance: true, // Permitir múltiples pestañas
-    ignoreDuplicate: true, // Ignorar error si ya existe en dev
+    ignoreDuplicate: true, // Allow in dev for HMR
   });
 
   await db.addCollections({
@@ -82,9 +80,9 @@ const createDB = async (): Promise<MatStoreDatabase> => {
   return db;
 };
 
-export const getDatabase = () => {
-  if (!dbPromise) {
-    dbPromise = createDB();
+export const getDatabase = (): Promise<MatStoreDatabase> => {
+  if (!globalThis._matStoreDbPromise) {
+    globalThis._matStoreDbPromise = createDB();
   }
-  return dbPromise;
+  return globalThis._matStoreDbPromise;
 };
