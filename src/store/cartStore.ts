@@ -10,7 +10,7 @@ export interface CartItem {
 
 interface CartState {
   items: CartItem[];
-  addItem: (product: { id: string; name: string; price: number }) => void;
+  addItem: (product: { id: string; name: string; price: number; quantity?: number }) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, delta: number) => void;
   clearCart: () => void;
@@ -21,20 +21,21 @@ interface CartState {
 const createCartSlice: StateCreator<CartState> = (set, get) => ({
   items: [],
 
-  addItem: (product: { id: string; name: string; price: number }) => {
+  addItem: (product: { id: string; name: string; price: number; quantity?: number }) => {
+    const quantityToAdd = product.quantity ?? 1;
     set((state) => {
       const existing = state.items.find((i) => i.id === product.id);
       if (existing) {
         return {
           items: state.items.map((i) =>
-            i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+            i.id === product.id ? { ...i, quantity: i.quantity + quantityToAdd } : i
           ),
         };
       }
       return {
         items: [
           ...state.items,
-          { ...product, quantity: 1, tax_rate: 0.18 }, // Default IGV
+          { ...product, quantity: quantityToAdd, tax_rate: 0.18 }, // Default IGV
         ],
       };
     });

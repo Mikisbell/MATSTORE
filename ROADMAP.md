@@ -72,7 +72,8 @@ FASE 2: MÓDULO POS (Instalaciones)
 FASE 3: FUNCIONALIDAD HÍBRIDA (Diferenciadores)
 ═══════════════════════════════════════════════════════════════════════════════
 
-[ ] 3.1. Polimorfismo UI: Pedir peso si is_weighted = true.
+[x] 3.1. Polimorfismo UI: Pedir peso si is_weighted = true.
+    ✅ COMPLETADO: 2025-12-29 - WeightInputModal + addItem con quantity decimal. Grid detecta inventory_type y abre modal.
 
 [ ] 3.2. Módulo de Fiado: Botón checkout para asignar venta a cliente.
 
