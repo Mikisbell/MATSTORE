@@ -16,6 +16,7 @@ interface CartState {
   clearCart: () => void;
   getSummary: () => { subtotal: number; tax: number; total: number; count: number };
   checkout: () => Promise<void>;
+  checkoutOnCredit: (clientId: string) => Promise<void>;
 }
 
 const createCartSlice: StateCreator<CartState> = (set, get) => ({
@@ -170,6 +171,94 @@ const createCartSlice: StateCreator<CartState> = (set, get) => ({
     } catch (error) {
       console.error('Checkout Failed:', error);
       throw error; // Re-throw for UI to handle
+    }
+  },
+
+  checkoutOnCredit: async (clientId: string) => {
+    const { items, getSummary, clearCart } = get();
+    if (items.length === 0) return;
+
+    try {
+      const { getDatabase } = await import('@/lib/db');
+      const db = await getDatabase();
+      const summary = getSummary();
+      const saleId = crypto.randomUUID();
+
+      // 1. Create Sale Document (Credit)
+      const saleData = {
+        id: saleId,
+        tenant_id: 'tenant-default',
+        store_id: 'store-default',
+        user_id: 'user-default',
+        client_id: clientId, // Assigned client
+        status: 'credit', // Mark as credit sale
+        payment_method: 'credit',
+        total: summary.total,
+        subtotal: summary.subtotal,
+        tax: summary.tax,
+        updated_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        deleted: false,
+      };
+
+      // 2. Create Sale Items
+      const saleItemsData = items.map((item) => ({
+        id: crypto.randomUUID(),
+        sale_id: saleId,
+        variant_id: item.id,
+        quantity: item.quantity,
+        unit_price: item.price,
+        subtotal: item.price * item.quantity,
+        discount: 0,
+        updated_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        deleted: false,
+      }));
+
+      // 3. Create Credit Ledger Entry (Charge)
+      const creditEntry = {
+        id: crypto.randomUUID(),
+        tenant_id: 'tenant-default',
+        client_id: clientId,
+        sale_id: saleId,
+        type: 'charge',
+        amount: summary.total,
+        notes: `Venta a crédito - ${items.length} items`,
+        updated_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        deleted: false,
+      };
+
+      // 4. Persist to RxDB
+      await db.sales.insert(saleData);
+      await Promise.all(saleItemsData.map((item) => db.sale_items.insert(item)));
+      await db.credit_ledger.insert(creditEntry);
+
+      // 5. Optimistic Inventory Update
+      await Promise.all(
+        items.map(async (item) => {
+          const batch = await db.inventory_batches
+            .findOne({
+              selector: { variant_id: item.id },
+              sort: [{ updated_at: 'asc' }],
+            })
+            .exec();
+
+          if (batch) {
+            const currentQty = batch.get('quantity') || 0;
+            await batch.patch({
+              quantity: currentQty - item.quantity,
+              updated_at: new Date().toISOString(),
+            });
+          }
+        })
+      );
+
+      // 6. Success
+      clearCart();
+    } catch (error) {
+      console.error('Credit Checkout Failed:', error);
+      throw error;
     }
   },
 });

@@ -1,34 +1,32 @@
 ESTADO ACTUAL DEL PROYECTO MATSTORE
 
-Última Actualización: 2025-12-29 12:15
-Fase Actual: FASE 3 - FUNCIONALIDAD HÍBRIDA
-Progreso: 15/18 tareas (83%)
+Última Actualización: 2025-12-29 12:30
+Fase Actual: FASE 3 COMPLETADA - FUNCIONALIDAD HÍBRIDA
+Progreso: 17/18 tareas (94%)
 
 ═══════════════════════════════════════════════════════════════════════════════
-TAREAS COMPLETADAS
+TAREAS COMPLETADAS ESTA SESIÓN
 ═══════════════════════════════════════════════════════════════════════════════
-
-FASE 0 & 1 (FUNDACIONES & DATOS)
-[x] 0.1a...1.5 (Ver State Anterior)
-
-FASE 2: MÓDULO POS
-[x] 2.1  - Layout Principal (Structure Shell)
-[x] 2.2  - Buscador OmniSearch (HID Scanner)
-[x] 2.3  - Lógica de Carrito (Zustand)
-[x] 2.4  - Persistencia de Venta (RxDB)
 
 FASE 3: FUNCIONALIDAD HÍBRIDA
 [x] 3.1  - Polimorfismo UI (Productos Pesados)
-    - WeightInputModal: Input numérico con preview de subtotal.
-    - ProductGrid: Detecta `inventory_type: 'continuous'` y abre modal.
-    - addItem: Ahora acepta `quantity` opcional para decimales.
+    - WeightInputModal: Input numérico con preview de subtotal
+    - ProductGrid: Detecta `inventory_type: 'continuous'` y abre modal
+    - addItem: Acepta `quantity` opcional para decimales
+
+[x] 3.2  - Módulo de Fiado (Ventas a Crédito)
+    - ClientSelectorModal: Lista de clientes con búsqueda
+    - checkoutOnCredit: Guarda venta con status 'credit'
+    - credit_ledger: Crea entrada tipo 'charge' por monto de venta
+    - TicketSidebar: Botones duales FIADO / COBRAR
 
 ═══════════════════════════════════════════════════════════════════════════════
-PRÓXIMA TAREA
+PRÓXIMA FASE
 ═══════════════════════════════════════════════════════════════════════════════
 
-[ ] 3.2 - Módulo de Fiado
-    Botón checkout para asignar venta a cliente (crédito).
+FASE 4: INTEGRACIÓN Y DESPLIEGUE
+[ ] 4.1 - CI/CD Pipeline (GitHub Actions para Tauri)
+[ ] 4.2 - Auditoría Final (Memoria y Rendimiento)
 
 ═══════════════════════════════════════════════════════════════════════════════
 MATSTORE METRICS
