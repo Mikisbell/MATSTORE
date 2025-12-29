@@ -41,74 +41,114 @@ const DB_NAME = 'matstore_local_db';
 const storage = getRxStorageDexie();
 
 /**
- * Singleton de la Base de Datos usando globalThis
- * Evita recrear la DB en hot-reload (Next.js dev mode).
+ * Database singleton using window object for browser persistence
+ * Works with Turbopack HMR
  */
-declare global {
-  var _matStoreDb: MatStoreDatabase | undefined;
-  var _matStoreDbPromise: Promise<MatStoreDatabase> | undefined;
+let dbInstance: MatStoreDatabase | null = null;
+let dbPromise: Promise<MatStoreDatabase> | null = null;
+
+// Use window for browser-side persistence across HMR
+if (typeof window !== 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const win = window as any;
+  if (win.__MATSTORE_DB__) {
+    dbInstance = win.__MATSTORE_DB__;
+  }
+  if (win.__MATSTORE_DB_PROMISE__) {
+    dbPromise = win.__MATSTORE_DB_PROMISE__;
+  }
 }
 
 const createDB = async (): Promise<MatStoreDatabase> => {
-  // If we already have a DB instance, return it
-  if (globalThis._matStoreDb) {
-    return globalThis._matStoreDb;
+  // Return existing instance if available
+  if (dbInstance) {
+    return dbInstance;
   }
 
-  const db = await createRxDatabase<MatStoreCollections>({
-    name: DB_NAME,
-    storage,
-    multiInstance: true,
-    // Don't use ignoreDuplicate - it throws DB9 in prod builds
-  });
-
-  await db.addCollections({
-    products: { schema: productSchema },
-    variants: { schema: variantSchema },
-    sales: { schema: saleSchema },
-    sale_items: { schema: saleItemSchema },
-    tenants: { schema: tenantSchema },
-    stores: { schema: storeSchema },
-    users: { schema: userSchema },
-    clients: { schema: clientSchema },
-    global_catalog: { schema: globalCatalogSchema },
-    categories: { schema: categorySchema },
-    inventory_batches: { schema: inventoryBatchSchema },
-    credit_ledger: { schema: creditLedgerSchema },
-  });
-
-  // 🔄 Iniciar Replicación para todas las colecciones
-  const collections = Object.keys(db.collections);
-
-  for (const collectionName of collections) {
-    const collection = db.collections[collectionName as keyof MatStoreCollections];
-    await replicateSupabase(collection, collectionName);
+  // Browser-side check
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const win = window as any;
+    if (win.__MATSTORE_DB__) {
+      dbInstance = win.__MATSTORE_DB__;
+      return dbInstance!;
+    }
   }
 
-  // Store the instance
-  globalThis._matStoreDb = db;
+  try {
+    const db = await createRxDatabase<MatStoreCollections>({
+      name: DB_NAME,
+      storage,
+      multiInstance: true,
+    });
 
-  return db;
+    await db.addCollections({
+      products: { schema: productSchema },
+      variants: { schema: variantSchema },
+      sales: { schema: saleSchema },
+      sale_items: { schema: saleItemSchema },
+      tenants: { schema: tenantSchema },
+      stores: { schema: storeSchema },
+      users: { schema: userSchema },
+      clients: { schema: clientSchema },
+      global_catalog: { schema: globalCatalogSchema },
+      categories: { schema: categorySchema },
+      inventory_batches: { schema: inventoryBatchSchema },
+      credit_ledger: { schema: creditLedgerSchema },
+    });
+
+    // Initialize replication
+    const collections = Object.keys(db.collections);
+    for (const collectionName of collections) {
+      const collection = db.collections[collectionName as keyof MatStoreCollections];
+      await replicateSupabase(collection, collectionName);
+    }
+
+    // Store in both module and window scope
+    dbInstance = db;
+    if (typeof window !== 'undefined') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).__MATSTORE_DB__ = db;
+    }
+
+    return db;
+  } catch (error) {
+    // If DB8 (already exists) or DB9 error, try to remove and recreate
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rxError = error as any;
+    if (rxError.code === 'DB8' || rxError.code === 'DB9') {
+      await removeRxDatabase(DB_NAME, storage);
+      // Recursive call after cleanup
+      return createDB();
+    }
+    throw error;
+  }
 };
 
 export const getDatabase = async (): Promise<MatStoreDatabase> => {
-  // Quick check for existing instance
-  if (globalThis._matStoreDb) {
-    return globalThis._matStoreDb;
+  // Quick return if we have an instance
+  if (dbInstance) {
+    return dbInstance;
   }
 
-  // Use promise singleton to prevent race conditions
-  if (!globalThis._matStoreDbPromise) {
-    globalThis._matStoreDbPromise = createDB().catch(async (error) => {
-      // If DB8 error (db already exists), try to get the existing one
-      if (error.code === 'DB8') {
-        // Remove and recreate
-        await removeRxDatabase(DB_NAME, storage);
-        return createDB();
-      }
-      throw error;
-    });
+  // Check window for existing instance (HMR recovery)
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const win = window as any;
+    if (win.__MATSTORE_DB__) {
+      dbInstance = win.__MATSTORE_DB__;
+      return dbInstance!;
+    }
   }
 
-  return globalThis._matStoreDbPromise;
+  // Use promise to prevent race conditions
+  if (!dbPromise) {
+    dbPromise = createDB();
+    if (typeof window !== 'undefined') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).__MATSTORE_DB_PROMISE__ = dbPromise;
+    }
+  }
+
+  return dbPromise;
 };
