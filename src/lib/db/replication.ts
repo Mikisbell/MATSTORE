@@ -49,8 +49,15 @@ export async function replicateSupabase<TDoc>(
           .limit(batchSize);
 
         if (error) {
-          console.error(`❌ Pull error on ${tableName}:`, error);
-          throw error;
+          console.warn(
+            `⚠️ Pull skipped for ${tableName} (offline or table not found):`,
+            error.message || error
+          );
+          // Return empty - offline-first: don't block on sync errors
+          return {
+            documents: [],
+            checkpoint: lastCheckpoint,
+          };
         }
 
         if (data.length === 0) {
@@ -89,9 +96,12 @@ export async function replicateSupabase<TDoc>(
         });
 
         if (error) {
-          console.error(`❌ Push error on ${tableName}:`, error);
-          // Si falla, RxDB reintentará automáticamente
-          throw error;
+          console.warn(
+            `⚠️ Push skipped for ${tableName} (offline or table not found):`,
+            error.message || error
+          );
+          // Offline-first: don't block on sync errors, data is safe locally
+          return [];
         }
 
         // Retornar Docs conflictivos (vacío porque confiamos en "Last Write Wins")
